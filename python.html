@@ -7,6 +7,8 @@
 <style>*{box-sizing:border-box}
 :root{--bg:#fbfaf7;--fg:#1b1b19;--mut:#6f6f69;--card:#fff;--line:#e3dfd5;--code:#f5f3ed;--acc:#8a3a12;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,"Cascadia Mono",Consolas,"SF Mono",Menlo,"DejaVu Sans Mono",monospace}
 @media (prefers-color-scheme:dark){:root{--bg:#15171a;--fg:#e3e3e0;--mut:#98988f;--card:#1d2024;--line:#2f343a;--code:#15181b;--acc:#e0a06c}}
+:root{--kw:#7b3a8f;--str:#3d6e1e;--num:#a3471c;--fn:#1d5a91;--bi:#136a6a}
+@media screen and (prefers-color-scheme:dark){:root{--kw:#c49be0;--str:#a3cf85;--num:#e3a574;--fn:#86b4e8;--bi:#6cc4c0}}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.35}
 .w{margin:0;padding:16px}
@@ -19,6 +21,12 @@ h1{font-size:22px;margin:2px 0;letter-spacing:-.01em}
 .i:first-of-type .l{margin-top:2px}
 pre{margin:0;background:var(--code);border-radius:4px;padding:5px 7px;font-family:var(--mono);font-size:11.5px;line-height:1.42;white-space:pre-wrap;overflow-wrap:anywhere}
 pre i{font-style:normal;color:var(--mut)}
+pre .k{color:var(--kw)}
+pre .s{color:var(--str)}
+pre .n{color:var(--num)}
+pre .f{color:var(--fn)}
+pre .b{color:var(--bi)}
+pre .e{color:var(--fg)}
 ul{margin:2px 0 0;padding-left:17px}
 li{margin:4px 0;font-size:12.5px}
 @media (max-width:520px){.g{column-width:auto;column-count:1}}
@@ -36,6 +44,57 @@ h1{font-size:13pt;margin:0 0 4px}
 .sub{display:none}
 li{font-size:6.8pt;margin:2px 0}
 }</style>
+<script>
+// Colour the Python in every <pre> once the page has loaded. Comments marked by hand
+// with <i> are left alone; a bare # comment gets the same <i> treatment.
+addEventListener("DOMContentLoaded", () => {
+  const words = list => list.trim().split(/\s+/).join("|");
+  const KEYWORDS = words(`and as assert async await break class continue def del elif else except
+    finally for from global if import in is lambda nonlocal not or pass raise return try while with yield`);
+  const BUILTINS = words(`abs all any bool chr dict divmod enumerate filter float frozenset hash input
+    int isinstance iter len list map max min next object open ord pow print range repr reversed round
+    set sorted str sum super tuple type zip Exception IndexError KeyError TypeError ValueError`);
+  const token = new RegExp([
+    String.raw`(?<comment>#.*)`,
+    String.raw`(?<s>(?:\b[rRbBfFuU]{1,2})?(?:"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'))`,
+    String.raw`(?<f>(?<=^[ \t]*)@[\w.]+|(?<=\b(?:def|class)\s+)\w+)`,
+    String.raw`(?<k>(?<=^[ \t]*)(?:match|case)(?=[ \t]+[^\s=.,:)])|(?<!\.)\b(?:${KEYWORDS})\b)`,
+    String.raw`(?<n>(?<!\.)\b(?:True|False|None)\b|\b\d[\d_]*(?:\.\d*)?(?:[eE][+-]?\d+)?\b)`,
+    String.raw`(?<b>(?<!\.)\b(?:${BUILTINS})\b)`,
+  ].join("|"), "gm");
+
+  const make = (tag, cls, ...content) => {
+    const el = document.createElement(tag);
+    if (cls) el.className = cls;
+    el.append(...content);
+    return el;
+  };
+  const wrap = (kind, text) => {
+    if (kind === "comment") return make("i", "", text);
+    // Show the {expressions} in an f-string as code rather than as string.
+    if (kind === "s" && /^[a-z]*f/i.test(text)) {
+      const parts = text.split(/(\{[^{}]*\})/).filter(Boolean);
+      return make("span", "s", ...parts.map(part => part.startsWith("{") ? make("span", "e", part) : part));
+    }
+    return make("span", kind, text);
+  };
+
+  for (const pre of document.querySelectorAll("pre")) {
+    for (const node of [...pre.childNodes]) {
+      if (node.nodeType !== Node.TEXT_NODE) continue;
+      const out = [];
+      let last = 0;
+      for (const m of node.data.matchAll(token)) {
+        const [kind] = Object.entries(m.groups).find(([, v]) => v !== undefined);
+        out.push(node.data.slice(last, m.index), wrap(kind, m[0]));
+        last = m.index + m[0].length;
+      }
+      out.push(node.data.slice(last));
+      node.replaceWith(...out.filter(part => part !== ""));
+    }
+  }
+});
+</script>
 </head>
 <body>
 <div class=w>
