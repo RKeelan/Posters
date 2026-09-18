@@ -5,8 +5,9 @@ Read `README.md` first.
 ## Repository Guidance
 
 - This is a static GitHub Pages site rooted at `index.html`. There is nothing to build, install, or bundle.
-- Each poster is one self-contained HTML file at the repository root, with its CSS inline. No JavaScript, no external stylesheets, fonts, or images.
+- Each poster is one self-contained HTML file at the repository root, with its CSS and JavaScript inline. No external scripts, stylesheets, fonts, or images.
 - `index.html` defines the shared look: the `:root` colour variables, the `prefers-color-scheme: dark` override, the `--sans`/`--mono` font stacks, and the card styling. Posters repeat those variables rather than importing them, so keep the values in step.
+- Each poster has a filter box under its title, driven by a script at the end of `<body>`. A card whose heading matches shows whole; otherwise only its matching `.i` items or `li`s show. A new poster needs the same `.c` card and `.i` item structure, plus a copy of the box, its styles, and the script from `python.html`.
 - Posters carry their own `@media print` rules; a change to a poster's layout needs checking in print preview as well as on screen.
 - Canadian spelling throughout.
 
