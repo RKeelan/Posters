@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Python Fundamentals</title>
+<style>*{box-sizing:border-box}
+:root{--bg:#fbfaf7;--fg:#1b1b19;--mut:#6f6f69;--card:#fff;--line:#e3dfd5;--code:#f5f3ed;--acc:#8a3a12;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,"Cascadia Mono",Consolas,"SF Mono",Menlo,"DejaVu Sans Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#15171a;--fg:#e3e3e0;--mut:#98988f;--card:#1d2024;--line:#2f343a;--code:#15181b;--acc:#e0a06c}}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.35}
+.w{margin:0;padding:16px}
+h1{font-size:22px;margin:2px 0;letter-spacing:-.01em}
+.sub{color:var(--mut);font-size:12px;margin:0 0 14px}
+.g{column-width:330px;column-gap:12px}
+.c{display:flow-root;margin:0 0 12px;break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 11px}
+.c h2{font-size:13px;margin:0 0 7px;color:var(--acc);border-bottom:1px solid var(--line);padding-bottom:5px}
+.l{margin:8px 0 3px;font-size:11px;color:var(--mut);font-weight:600}
+.i:first-of-type .l{margin-top:2px}
+pre{margin:0;background:var(--code);border-radius:4px;padding:5px 7px;font-family:var(--mono);font-size:11.5px;line-height:1.42;white-space:pre-wrap;overflow-wrap:anywhere}
+pre i{font-style:normal;color:var(--mut)}
+ul{margin:2px 0 0;padding-left:17px}
+li{margin:4px 0;font-size:12.5px}
+@media (max-width:520px){.g{column-width:auto;column-count:1}}
+@media print{
+:root{--bg:#fff;--fg:#000;--mut:#555;--card:#fff;--line:#bbb;--code:#fff;--acc:#000}
+@page{margin:9mm}
+body{font-size:8pt;background:#fff}
+.w{padding:0}
+.g{column-width:auto;column-count:3;column-gap:6px}
+.c{break-inside:avoid;page-break-inside:avoid;margin-bottom:6px;padding:4px 5px;border-radius:0}
+.c h2{font-size:8pt;margin-bottom:3px;padding-bottom:2px}
+.l{font-size:6.8pt;margin:4px 0 1px}
+pre{font-size:6.6pt;line-height:1.3;padding:1px 2px}
+h1{font-size:13pt;margin:0 0 4px}
+.sub{display:none}
+li{font-size:6.8pt;margin:2px 0}
+}</style>
+</head>
+<body>
+<div class=w>
+<h1>Python Fundamentals</h1>
+<p class=sub>Quick reference, Python 3.10+</p>
+<div class=g>
+<section class=c><h2>1. HackerRank I/O</h2>
+<div class=i><p class=l>One line, one integer</p><pre>s = input().strip()
+n = int(input())
+name, age = input().split()</pre></div>
+<div class=i><p class=l>Ints on one line</p><pre>a = list(map(int, input().split()))
+n, m = map(int, input().split())</pre></div>
+<div class=i><p class=l>n lines</p><pre>n = int(input())
+grid = [input().rstrip() for _ in range(n)]
+rows = [list(map(int, input().split())) for _ in range(n)]</pre></div>
+<div class=i><p class=l>Bulk read (fast)</p><pre>import sys
+data = sys.stdin.read().split()   <i># all whitespace tokens</i>
+it = iter(data)
+n = int(next(it))
+vals = [int(next(it)) for _ in range(n)]</pre></div>
+<div class=i><p class=l>Output</p><pre>print(*a)                    <i># space separated</i>
+print(a, b, sep=" ")
+print(*a, sep="\n")          <i># one per line</i>
+print("\n".join(map(str, a)))
+print("x", end="")           <i># no newline</i></pre></div>
+<div class=i><p class=l>f-strings</p><pre>f"{x:.2f}"        <i># 3.14159 -&gt; '3.14'</i>
+f"{x:&gt;8}"         <i># right align in 8 columns</i>
+f"{x:&lt;8}"         <i># left;  f"{x:^8}" centre</i>
+f"{n:08d}"        <i># 42 -&gt; '00000042'</i>
+f"{n:,}"          <i># 1234567 -&gt; '1,234,567'</i>
+f"{n:b}"          <i># binary;  f"{n:x}" hex</i>
+f"{val!r}"        <i># repr</i>
+f"{n=}"           <i># 'n=42'  (debug)</i></pre></div>
+</section>
+<section class=c><h2>2. Strings</h2>
+<div class=i><p class=l>Slicing</p><pre>s = "abcdef"
+s[2:5]     <i># 'cde'</i>
+s[:3]      <i># 'abc'</i>
+s[-3:]     <i># 'def'</i>
+s[::2]     <i># 'ace'</i>
+s[::-1]    <i># 'fedcba'   reverse</i></pre></div>
+<div class=i><p class=l>Split and join</p><pre>"a,b".split(",")     <i># ['a', 'b']</i>
+"x y  z".split()     <i># ['x','y','z'] any run of spaces</i>
+"a,,b".split(",")    <i># ['a', '', 'b']</i>
+"a b c".split(" ", 1)     <i># ['a', 'b c']</i>
+",".join(parts)           <i># parts must all be str</i>
+"line1\nline2".splitlines()</pre></div>
+<div class=i><p class=l>Trim, replace, search</p><pre>s.strip()              <i># both ends; .lstrip .rstrip</i>
+s.strip(".,")          <i># strip those chars, not a prefix</i>
+s.rstrip("\n")
+s.replace("a", "b")    <i># all of them; 3rd arg caps it</i>
+s.find("x")            <i># -1 if absent (.index raises)</i>
+s.count("issi")        <i># 1 in 'mississippi': no overlap</i>
+s.startswith(("http", "ftp"))
+s.endswith(".py")
+s.removeprefix("www.")      <i># also s.removesuffix</i></pre></div>
+<div class=i><p class=l>Case and tests</p><pre><i># .upper() .lower() .title() .capitalize() .swapcase()</i>
+s.isdigit()            <i># '-42' -&gt; False, sign not allowed</i>
+<i># .isalpha() .isalnum() .isspace() .islower() .isupper()</i>
+s.casefold() == t.casefold()     <i># robust lower</i></pre></div>
+<div class=i><p class=l>Codes and transforms</p><pre>ord("a")        <i># 97</i>
+chr(97)         <i># 'a'</i>
+ord(c) - ord("a")          <i># letter index 0..25</i>
+"".join(sorted(s))         <i># anagram key</i>
+tbl = str.maketrans("abc", "xyz")
+s.translate(tbl)
+s.translate(str.maketrans("", "", ".,!?"))   <i># delete</i></pre></div>
+<div class=i><p class=l>Palindrome, padding</p><pre>s == s[::-1]
+t = "".join(c for c in s.lower() if c.isalnum())
+s.zfill(5)                  <i># '42' -&gt; '00042'</i>
+s.ljust(8, ".")             <i># s.rjust, s.center</i>
+"ab" * 3        <i># 'ababab'</i>
+"b" in s        <i># substring test</i></pre></div>
+</section>
+<section class=c><h2>3. Lists</h2>
+<div class=i><p class=l>Slicing</p><pre>a[1:4]      <i># items 1, 2, 3</i>
+a[-1]       <i># last</i>
+a[::2]      <i># every second</i>
+a[::-1]     <i># reversed copy</i>
+a[2:] = []  <i># truncate in place</i></pre></div>
+<div class=i><p class=l>Mutating</p><pre>a.append(x)          <i># one item</i>
+a.extend(b)          <i># many</i>
+a.insert(0, x)       <i># O(n)</i>
+a.pop()              <i># last;  a.pop(0) is O(n)</i>
+a.remove(v)          <i># first match, ValueError if none</i>
+a.index(v)           <i># position, ValueError if none</i>
+a.count(v)
+del a[2]
+a.clear()</pre></div>
+<div class=i><p class=l>Sorting</p><pre>b = sorted(a, key=len, reverse=True)   <i># new list</i>
+a.sort()                     <i># in place, returns None</i>
+a.sort(key=str.lower)
+a.sort(key=lambda p: (p[1], -p[2]))    <i># 1 asc, 2 desc</i>
+a.sort(key=lambda p: (-p.score, p.name))
+rows.sort(key=itemgetter(2, 0))
+sorted(words, key=lambda w: (-len(w), w))</pre></div>
+<div class=i><p class=l>Walking</p><pre>for i, v in enumerate(a, start=1):
+    print(i, v)
+for x, y in zip(xs, ys):        <i># stops at the shorter</i>
+    pass
+list(zip(*matrix))              <i># transpose -&gt; tuples</i>
+[list(r) for r in zip(*matrix)]
+for x in reversed(a):
+    pass</pre></div>
+<div class=i><p class=l>Comprehensions</p><pre>[x * x for x in a if x % 2 == 0]
+[c for row in grid for c in row]        <i># flatten</i>
+[[0] * n for _ in range(m)]             <i># m distinct rows</i>
+[x if x &gt; 0 else 0 for x in a]</pre></div>
+<div class=i><p class=l>Aggregates</p><pre>any(x &lt; 0 for x in a)
+all(c.isdigit() for c in s)
+sum(a)
+sum(r[1] for r in rows)
+min(a, default=0)
+max(words, key=len)</pre></div>
+<div class=i><p class=l>Copy vs alias</p><pre>b = a          <i># same list: b.append also changes a</i>
+b = a.copy()   <i># or a[:] or list(a)</i>
+import copy
+b = copy.deepcopy(nested)      <i># nested lists too</i></pre></div>
+</section>
+<section class=c><h2>4. Dicts and sets</h2>
+<div class=i><p class=l>Basics</p><pre>d = {"a": 1, "b": 2}
+d.get("c", 0)        <i># no KeyError; d["c"] raises</i>
+d["c"] = 3
+d.setdefault(k, []).append(v)
+d.pop("a", None)
+del d["b"]
+"a" in d             <i># tests keys</i></pre></div>
+<div class=i><p class=l>Iterating</p><pre>for k, v in d.items():
+    pass
+list(d.keys())
+list(d.values())
+sorted(d)                      <i># keys, sorted</i>
+sorted(d.items(), key=lambda kv: kv[1])       <i># by value</i>
+sorted(d.items(), key=lambda kv: (-kv[1], kv[0]))
+max(d, key=d.get)              <i># key with largest value</i></pre></div>
+<div class=i><p class=l>Build and merge</p><pre>{k: v * 2 for k, v in d.items() if v}
+dict(zip(keys, values))
+{**a, **b}      <i># b wins on clashes</i>
+a | b           <i># same thing, 3.9+</i>
+a |= b          <i># update in place</i></pre></div>
+<div class=i><p class=l>Sets</p><pre>s = {1, 2, 3}
+s.add(4)
+s.discard(9)    <i># never raises;  s.remove(9) does</i>
+s1 &amp; s2         <i># intersection</i>
+s1 | s2         <i># union</i>
+s1 - s2         <i># difference</i>
+s1 ^ s2         <i># symmetric difference</i>
+s1 &lt;= s2        <i># subset</i>
+frozenset(a)    <i># hashable: usable as a dict key</i>
+x in s          <i># O(1) vs O(n) for a list</i></pre></div>
+<div class=i><p class=l>Dedupe</p><pre>list(dict.fromkeys(items))    <i># keeps first-seen order</i>
+set(items)                    <i># order lost</i></pre></div>
+</section>
+<section class=c><h2>5. collections</h2>
+<div class=i><p class=l>Counter</p><pre>from collections import Counter
+c = Counter("mississippi")
+c.most_common(2)   <i># [('i', 4), ('s', 4)]</i>
+c["z"]             <i># 0, never KeyError</i>
+c.total()          <i># 11   (3.10+)</i>
+c.update(more)
+c.subtract(other)
+c1 + c2
+c1 - c2            <i># drops counts &lt;= 0</i>
+c1 &amp; c2            <i># per-key min;  c1 | c2 per-key max</i>
+sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))
+Counter(a) == Counter(b)      <i># anagram test</i></pre></div>
+<div class=i><p class=l>defaultdict</p><pre>from collections import defaultdict
+g = defaultdict(list)
+g[u].append(v)          <i># no key check needed</i>
+cnt = defaultdict(int)
+cnt[w] += 1
+<i># reading a missing key CREATES it</i></pre></div>
+<div class=i><p class=l>deque</p><pre>from collections import deque
+q = deque([1, 2, 3])
+q.append(4)
+q.appendleft(0)
+q.pop()                    <i># both ends are O(1)</i>
+q.popleft()                <i># a list's .pop(0) is O(n)</i>
+q.rotate(1)     <i># deque([1,2,3]) -&gt; deque([3,1,2])</i>
+last3 = deque(maxlen=3)    <i># pushes drop the far end</i></pre></div>
+<div class=i><p class=l>namedtuple</p><pre>from collections import namedtuple
+P = namedtuple("P", "x y")
+p = P(1, 2)
+p.x                 <i># also p[0]: it is still a tuple</i>
+p._replace(x=9)     <i># returns a new tuple</i>
+x, y = p</pre></div>
+<div class=i><p class=l>Ordering</p><pre><i># plain dict has kept insertion order since 3.7.</i>
+<i># OrderedDict only for move_to_end / order-aware ==</i></pre></div>
+</section>
+<section class=c><h2>6. itertools, functools</h2>
+<div class=i><p class=l>groupby (sort first)</p><pre>from itertools import groupby
+from operator import itemgetter
+rows.sort(key=itemgetter(0))     <i># REQUIRED: groups runs</i>
+for key, grp in groupby(rows, key=itemgetter(0)):
+    items = list(grp)            <i># grp dies on next step</i></pre></div>
+<div class=i><p class=l>Combinatorics</p><pre>from itertools import combinations, permutations, product
+list(combinations("abc", 2))    <i># ab ac bc</i>
+list(permutations([1, 2], 2))   <i># (1,2) (2,1)</i>
+list(product("ab", repeat=2))   <i># aa ab ba bb</i>
+list(product(xs, ys))           <i># nested loop</i></pre></div>
+<div class=i><p class=l>Streams</p><pre>from itertools import accumulate, chain, islice
+from itertools import pairwise, zip_longest
+list(accumulate([1, 2, 3, 4]))       <i># [1, 3, 6, 10]</i>
+list(accumulate(a, initial=0))       <i># prefix sums, n+1</i>
+list(accumulate(a, max))             <i># running max</i>
+list(chain(a, b))
+list(chain.from_iterable(grid))      <i># flatten</i>
+list(islice(gen, 5))                 <i># first 5</i>
+list(pairwise([1, 2, 3]))            <i># [(1,2), (2,3)]</i>
+list(zip_longest(a, b, fillvalue=0))</pre></div>
+<div class=i><p class=l>functools</p><pre>from functools import cache, lru_cache, reduce, partial
+
+@cache                   <i># or @lru_cache(maxsize=None)</i>
+def fib(n):
+    return n if n &lt; 2 else fib(n - 1) + fib(n - 2)
+
+reduce(lambda x, y: x * y, nums, 1)     <i># product</i>
+add5 = partial(add, 5)</pre></div>
+<div class=i><p class=l>operator</p><pre>from operator import itemgetter, attrgetter
+rows.sort(key=itemgetter(1, 0))
+objs.sort(key=attrgetter("age"))
+max(rows, key=itemgetter(2))</pre></div>
+</section>
+<section class=c><h2>7. heapq, bisect</h2>
+<div class=i><p class=l>Heap (min-heap)</p><pre>import heapq
+h = []
+heapq.heappush(h, (cost, node))
+cost, node = heapq.heappop(h)     <i># smallest first</i>
+h[0]                              <i># peek, no removal</i>
+heapq.heapify(a)                  <i># in place, O(n)</i>
+heapq.heappushpop(h, x)
+heapq.heapreplace(h, x)</pre></div>
+<div class=i><p class=l>Max-heap by negation</p><pre>heapq.heappush(h, -x)
+x = -heapq.heappop(h)
+heapq.heappush(h, (-score, name))    <i># ties: name asc</i></pre></div>
+<div class=i><p class=l>Top-k</p><pre>heapq.nlargest(3, rows, key=itemgetter(1))
+heapq.nsmallest(3, words, key=len)
+<i># k small -&gt; nlargest;  k near n -&gt; just sorted()</i></pre></div>
+<div class=i><p class=l>Bisect (sorted list)</p><pre>import bisect
+a = [1, 2, 4, 4, 5]
+bisect.bisect_left(a, 4)    <i># 2   first index &gt;= 4</i>
+bisect.bisect_right(a, 4)   <i># 4   first index &gt; 4</i>
+bisect.insort(a, 3)         <i># insert, keeps it sorted</i>
+bisect.bisect_left(a, x, lo, hi)</pre></div>
+<div class=i><p class=l>Bisect uses</p><pre>i = bisect.bisect_left(a, x)
+found = i &lt; len(a) and a[i] == x
+n_equal = bisect.bisect_right(a, x) - i
+grade = grades[bisect.bisect_right(cuts, score)]</pre></div>
+</section>
+<section class=c><h2>8. Classes, dataclasses</h2>
+<div class=i><p class=l>Plain class</p><pre>class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __repr__(self):
+        return f"Point({self.x}, {self.y})"
+
+    def __eq__(self, o):
+        return (self.x, self.y) == (o.x, o.y)
+
+    def __lt__(self, o):      <i># enables sorted, min, max</i>
+        return (self.x, self.y) &lt; (o.x, o.y)
+
+    def __hash__(self):       <i># __eq__ alone kills hashing</i>
+        return hash((self.x, self.y))</pre></div>
+<div class=i><p class=l>Property and methods</p><pre>class Circle:
+    def __init__(self, r):
+        self._r = r
+
+    @property
+    def area(self):           <i># c.area, no parentheses</i>
+        return math.pi * self._r ** 2
+
+    @staticmethod
+    def unit():
+        return Circle(1)
+
+    @classmethod
+    def from_diameter(cls, d):
+        return cls(d / 2)</pre></div>
+<div class=i><p class=l>dataclass</p><pre>from dataclasses import dataclass, field
+
+@dataclass(order=True, frozen=True)   <i># sortable, hashable</i>
+class Card:
+    rank: int
+    suit: str = "S"        <i># defaulted fields come last</i>
+
+@dataclass
+class Bag:
+    owner: str
+    items: list = field(default_factory=list)   <i># not = []</i>
+
+sorted(cards)              <i># compares rank, then suit</i></pre></div>
+<div class=i><p class=l>Enum</p><pre>from enum import Enum
+
+class Colour(Enum):
+    RED = 1
+    GREEN = 2
+
+Colour.RED.name     <i># 'RED'</i>
+Colour.RED.value    <i># 1</i>
+Colour(1)           <i># Colour.RED</i>
+list(Colour)</pre></div>
+</section>
+<section class=c><h2>9. Functions, numbers</h2>
+<div class=i><p class=l>Signatures</p><pre>def f(a, b=1, *args, sep=",", **kw):
+    print(a, b, args, sep, kw)
+
+def g(a, *, strict=False):       <i># strict is keyword-only</i>
+    pass
+
+f(*a, **d)                       <i># unpack at the call</i></pre></div>
+<div class=i><p class=l>Mutable default trap</p><pre>def bad(items=[]):     <i># ONE list shared by every call</i>
+    items.append(1)
+    return items
+
+def good(items=None):
+    items = [] if items is None else items
+    return items</pre></div>
+<div class=i><p class=l>Lambdas and closures</p><pre>key = lambda kv: kv[1]
+
+def make_adder(n):
+    def add(x):
+        return x + n      <i># n captured from outer scope</i>
+    return add</pre></div>
+<div class=i><p class=l>Generators</p><pre>def evens(n):
+    for i in range(n):
+        if i % 2 == 0:
+            yield i
+
+squares = (x * x for x in a)     <i># lazy, no list built</i>
+next(it, None)                   <i># default, no exception</i>
+first = next((x for x in a if x &gt; 0), -1)</pre></div>
+<div class=i><p class=l>Expression idioms</p><pre>if (m := len(line)) &gt; 80:        <i># walrus: assign + test</i>
+    print(m)
+x = a if cond else b
+if 0 &lt;= i &lt; n and lo &lt; v &lt;= hi:  <i># chained comparisons</i>
+    pass
+a, b = b, a</pre></div>
+<div class=i><p class=l>Arithmetic</p><pre>7 / 2      <i># 3.5   always float</i>
+7 // 2     <i># 3     floor</i>
+-7 // 2    <i># -4    floors toward -inf, not toward 0</i>
+-7 % 2     <i># 1     sign follows the divisor</i>
+7 % -2     <i># -1</i>
+divmod(17, 5)     <i># (3, 2)</i>
+2 ** 10           <i># 1024; ints are unbounded</i>
+pow(2, 10, 7)     <i># 2, modular and fast</i></pre></div>
+<div class=i><p class=l>math</p><pre>import math
+math.isqrt(17)       <i># 4   exact integer sqrt</i>
+math.gcd(12, 18)     <i># 6</i>
+math.lcm(4, 6)       <i># 12</i>
+math.comb(5, 2)      <i># 10;  math.perm, math.factorial</i>
+math.floor(-1.5)     <i># -2;  math.ceil(1.2) -&gt; 2</i>
+round(2.5)           <i># 2, ties to even; round(3.5) -&gt; 4</i>
+round(x, 2)
+abs(-3)
+best = float("inf")
+math.isclose(a, b)</pre></div>
+</section>
+<section class=c><h2>10. Control flow, errors</h2>
+<div class=i><p class=l>for / while else</p><pre>for x in a:
+    if x == t:
+        break
+else:
+    print("not found")    <i># runs only if no break</i>
+
+while q:
+    q.pop()
+else:
+    print("drained")</pre></div>
+<div class=i><p class=l>try blocks</p><pre>try:
+    n = int(s)
+except ValueError as e:
+    print("bad:", e)
+except (KeyError, IndexError):
+    raise                 <i># re-raise unchanged</i>
+else:
+    use(n)                <i># ran without an exception</i>
+finally:
+    cleanup()             <i># always</i></pre></div>
+<div class=i><p class=l>Raising</p><pre>raise ValueError(f"bad input: {s!r}")
+
+class ParseError(Exception):
+    pass
+
+raise ParseError("line 7") from e</pre></div>
+<div class=i><p class=l>Files</p><pre>with open(path, encoding="utf-8") as f:
+    for line in f:              <i># streams, no big read</i>
+        handle(line.rstrip("\n"))
+
+with open(path, encoding="utf-8") as f:
+    text = f.read()
+
+with open(out, "w", encoding="utf-8") as f:
+    f.write("\n".join(rows))</pre></div>
+<div class=i><p class=l>match / case</p><pre>match cmd.split():
+    case ["add", x, y]:
+        print(int(x) + int(y))
+    case ["quit"] | ["exit"]:
+        print("bye")
+    case [op, *rest] if op in OPS:
+        run(op, rest)
+    case _:
+        print("unknown")</pre></div>
+<div class=i><p class=l>assert</p><pre>assert n &gt; 0, "n must be positive"
+<i># stripped by python -O: not for input validation</i></pre></div>
+</section>
+<section class=c><h2>11. Patterns</h2>
+<div class=i><p class=l>Two pointers</p><pre>def pair_sum(a, t):           <i># a sorted ascending</i>
+    i, j = 0, len(a) - 1
+    while i &lt; j:
+        s = a[i] + a[j]
+        if s == t:
+            return i, j
+        if s &lt; t:
+            i += 1
+        else:
+            j -= 1
+    return None</pre></div>
+<div class=i><p class=l>Sliding window</p><pre>seen = {}                     <i># char -&gt; last index</i>
+left = best = 0
+for right, ch in enumerate(s):
+    if ch in seen and seen[ch] &gt;= left:
+        left = seen[ch] + 1
+    seen[ch] = right
+    best = max(best, right - left + 1)</pre></div>
+<div class=i><p class=l>Prefix sums</p><pre>from itertools import accumulate
+pre = list(accumulate(a, initial=0))    <i># pre[0] == 0</i>
+total = pre[j] - pre[i]                 <i># sum(a[i:j])</i></pre></div>
+<div class=i><p class=l>Frequency</p><pre>cnt = Counter(words)
+word, n = cnt.most_common(1)[0]
+dups = [k for k, v in cnt.items() if v &gt; 1]</pre></div>
+<div class=i><p class=l>Binary search by hand</p><pre>def find(a, t):
+    lo, hi = 0, len(a) - 1
+    while lo &lt;= hi:
+        mid = (lo + hi) // 2
+        if a[mid] == t:
+            return mid
+        if a[mid] &lt; t:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1</pre></div>
+<div class=i><p class=l>BFS on a grid</p><pre>from collections import deque
+q = deque([(r0, c0)])
+dist = {(r0, c0): 0}
+while q:
+    r, c = q.popleft()
+    for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        nr, nc = r + dr, c + dc
+        if not (0 &lt;= nr &lt; R and 0 &lt;= nc &lt; C):
+            continue
+        if grid[nr][nc] == "#" or (nr, nc) in dist:
+            continue
+        dist[nr, nc] = dist[r, c] + 1
+        q.append((nr, nc))</pre></div>
+<div class=i><p class=l>DFS and memoisation</p><pre>import sys
+sys.setrecursionlimit(10 ** 6)
+
+def dfs(u, seen):
+    seen.add(u)
+    for v in adj[u]:
+        if v not in seen:
+            dfs(v, seen)
+
+@cache                     <i># arguments must be hashable</i>
+def ways(i, left):
+    if left == 0:
+        return 1
+    if left &lt; 0 or i == len(coins):
+        return 0
+    return ways(i + 1, left) + ways(i, left - coins[i])</pre></div>
+<div class=i><p class=l>Group and aggregate</p><pre>rows.sort(key=itemgetter(0))
+totals = {k: sum(r[1] for r in g)
+          for k, g in groupby(rows, key=itemgetter(0))}</pre></div>
+<div class=i><p class=l>Build strings</p><pre>parts = []
+for chunk in chunks:
+    parts.append(chunk)    <i># not out += chunk in a loop</i>
+out = "".join(parts)</pre></div>
+<div class=i><p class=l>Validate input</p><pre>"42".isdigit()      <i># True</i>
+"-42".isdigit()     <i># False: sign not allowed</i>
+"4.2".isdigit()     <i># False</i>
+<i># .isnumeric() is looser: vulgar fractions and Roman</i>
+<i># numerals pass it, yet int() still rejects them</i>
+
+def as_int(s, default=None):
+    try:
+        return int(s)      <i># handles signs and spaces</i>
+    except ValueError:
+        return default</pre></div>
+<div class=i><p class=l>Dates</p><pre>from datetime import datetime, date, timedelta
+d = datetime.strptime("18-Sep-2026", "%d-%b-%Y")
+d.strftime("%Y-%m-%d")        <i># '2026-09-18'</i>
+d + timedelta(days=7, hours=3)
+(d2 - d1).days
+date.today().isoformat()
+<i># %Y %m %d %H %M %S  %b month abbr  %A weekday</i></pre></div>
+</section>
+<section class=c><h2>12. Gotchas</h2>
+<div class=i><p class=l>Identity vs equality</p><pre>a is b      <i># same object; true for small ints by luck</i>
+a == b      <i># same value: use this</i>
+x is None   <i># the correct idiom for None</i></pre></div>
+<div class=i><p class=l>The aliasing bug</p><pre>grid = [[0] * n] * m     <i># m references to ONE row</i>
+grid[0][0] = 1           <i># every row now starts with 1</i>
+grid = [[0] * n for _ in range(m)]     <i># correct</i></pre></div>
+<div class=i><p class=l>Methods returning None</p><pre>a = a.sort()          <i># None: sort is in place</i>
+a = sorted(a)         <i># or call a.sort() on its own line</i>
+<i># same for .reverse() .append() .extend() .clear()</i></pre></div>
+<div class=i><p class=l>Mutating while iterating</p><pre>for k in list(d):     <i># copy the keys first</i>
+    if not d[k]:
+        del d[k]
+a = [x for x in a if keep(x)]    <i># rebuild, not remove</i></pre></div>
+<div class=i><p class=l>Strings and ranges</p><pre>s[0] = "x"      <i># TypeError: strings are immutable</i>
+s = "x" + s[1:]
+range(1, 5)     <i># 1,2,3,4: end excluded</i>
+a[1:3]          <i># 2 items: end excluded</i></pre></div>
+<div class=i><p class=l>Truthiness</p><pre>1 and 2         <i># 2, not True: it returns an operand</i>
+0 or "" or "x"  <i># 'x': first truthy, else the last</i>
+x = val or default     <i># careful: 0 and "" are falsy</i>
+if a:           <i># empty list, str, dict and 0 are falsy</i>
+    pass</pre></div>
+<div class=i><p class=l>Empty and float traps</p><pre>max([])                 <i># ValueError</i>
+max([], default=0)      <i># safe</i>
+0.1 + 0.2 == 0.3        <i># False (0.30000000000000004)</i>
+math.isclose(a, b)      <i># or round(a - b, 9) == 0</i>
+int(-3.7)               <i># -3: truncates toward zero</i>
+-7 // 2                 <i># -4: floors toward -inf</i></pre></div>
+<div class=i><p class=l>Sorting surprises</p><pre>"10" &lt; "9"              <i># True: compared character by</i>
+                        <i># character, not numerically</i>
+sorted(["10", "9"], key=int)      <i># ['9', '10']</i>
+sorted([1, "a"])        <i># TypeError: str vs int</i></pre></div>
+<div class=i><p class=l>Scope</p><pre>count = 0
+
+def bump():
+    global count
+    count += 1
+
+def outer():
+    n = 0
+    def inner():
+        nonlocal n
+        n += 1
+    inner()
+    return n</pre></div>
+</section>
+<section class=c><h2>13. Checklist</h2><ul>
+<li>Read every question first; do the cheapest one first.</li>
+<li>Copy the output format exactly: separator, case, trailing newline.</li>
+<li>Confirm 0-based or 1-based indices before writing the loop.</li>
+<li>Test empty input, n = 1, all-equal, and the largest bound.</li>
+<li>Reread the constraints: n up to 1e5 rules out O(n^2).</li>
+<li>Name variables for what they hold; pull repeated logic into a helper.</li>
+<li>Trace the sample input by hand before running it.</li>
+<li>Delete debug prints: stray output fails the checker.</li>
+<li>Brute force first and submit it, then optimise. Partial credit counts.</li>
+<li>Time-box each question; move on and come back.</li>
+</ul></section>
+</div>
+</div>
+</body>
+</html>
