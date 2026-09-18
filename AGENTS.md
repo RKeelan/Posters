@@ -1,0 +1,19 @@
+# AGENTS.md
+
+Read `README.md` first.
+
+## Repository Guidance
+
+- This is a static GitHub Pages site rooted at `index.html`. There is nothing to build, install, or bundle.
+- Each poster is one self-contained HTML file at the repository root, with its CSS inline. No JavaScript, no external stylesheets, fonts, or images.
+- `index.html` defines the shared look: the `:root` colour variables, the `prefers-color-scheme: dark` override, the `--sans`/`--mono` font stacks, and the card styling. Posters repeat those variables rather than importing them, so keep the values in step.
+- Posters carry their own `@media print` rules; a change to a poster's layout needs checking in print preview as well as on screen.
+- Canadian spelling throughout.
+
+## Commands
+
+There is no local toolchain. To check the site, open `index.html` in a browser. To run the checks CI runs, read `.github/workflows/test.yml`.
+
+## Dependency Policy
+
+The only dependencies are the GitHub Actions used by the workflows, pinned to major version tags. Dependabot handles upgrades.

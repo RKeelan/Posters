@@ -1,0 +1,94 @@
+name: Validate Repository
+
+on:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Check posters
+        run: |
+          python3 - <<'PY'
+          import sys
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+
+          class Poster(HTMLParser):
+              def __init__(self):
+                  super().__init__(convert_charrefs=True)
+                  self.lang = None
+                  self.title = ""
+                  self.in_title = False
+                  self.links = []
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag == "html":
+                      self.lang = attrs.get("lang")
+                  elif tag == "title":
+                      self.in_title = True
+                  elif tag == "a" and attrs.get("href"):
+                      self.links.append(attrs["href"])
+
+              def handle_endtag(self, tag):
+                  if tag == "title":
+                      self.in_title = False
+
+              def handle_data(self, data):
+                  if self.in_title:
+                      self.title += data
+
+
+          errors = []
+          for path in sorted(Path(".").glob("*.html")):
+              parser = Poster()
+              parser.feed(path.read_text(encoding="utf-8"))
+              parser.close()
+              if parser.lang != "en-CA":
+                  errors.append(f'{path}: <html> lang is {parser.lang!r}, expected "en-CA"')
+              if not parser.title.strip():
+                  errors.append(f"{path}: missing a <title>")
+              for href in parser.links:
+                  if "://" in href or href.startswith(("#", "mailto:")):
+                      continue
+                  if not (path.parent / href.split("#")[0]).exists():
+                      errors.append(f"{path}: link to missing file {href!r}")
+
+          index = Path("index.html").read_text(encoding="utf-8")
+          for path in sorted(Path(".").glob("*.html")):
+              if path.name != "index.html" and path.name not in index:
+                  errors.append(f"{path}: no card for it in index.html")
+
+          for error in errors:
+              print(error)
+          sys.exit(1 if errors else 0)
+          PY
+
+      - name: Install workflow validation dependency
+        run: python3 -m pip install pyyaml
+
+      - name: Check workflow YAML
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          for path in sorted(Path(".github").rglob("*.yml")):
+              with path.open("r", encoding="utf-8") as handle:
+                  yaml.safe_load(handle)
+          PY
