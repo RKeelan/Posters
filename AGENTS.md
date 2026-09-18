@@ -9,6 +9,7 @@ Read `README.md` first.
 - `index.html` defines the shared look: the `:root` colour variables, the `prefers-color-scheme: dark` override, the `--sans`/`--mono` font stacks, and the card styling. Posters repeat those variables rather than importing them, so keep the values in step.
 - Each poster has a filter box under its title, driven by a script at the end of `<body>`. A card whose heading matches shows whole; otherwise only its matching `.i` items or `li`s show. A new poster needs the same `.c` card and `.i` item structure, plus a copy of the box, its styles, and the script from `python.html`.
 - Posters carry their own `@media print` rules; a change to a poster's layout needs checking in print preview as well as on screen.
+- A script in `<head>` colours the Python in each `<pre>` when the page loads, using the `--kw`, `--str`, `--num`, `--fn`, and `--bi` token colours. It skips `<i>` elements, so comments stay marked by hand as `<i># ...</i>` and remain muted without JavaScript. A poster in another language needs its own keyword and builtin lists.
 - Canadian spelling throughout.
 
 ## Commands
