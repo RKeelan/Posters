@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Python FastAPI — HTTP Vocabulary</title>
+<style>*{box-sizing:border-box}
+:root{--bg:#fbfaf7;--fg:#1b1b19;--mut:#6f6f69;--card:#fff;--line:#e3dfd5;--code:#f5f3ed;--acc:#8a3a12;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,"Cascadia Mono",Consolas,"SF Mono",Menlo,"DejaVu Sans Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#15171a;--fg:#e3e3e0;--mut:#98988f;--card:#1d2024;--line:#2f343a;--code:#15181b;--acc:#e0a06c}}
+:root{--kw:#7b3a8f;--str:#3d6e1e;--num:#a3471c;--fn:#1d5a91;--bi:#136a6a}
+@media screen and (prefers-color-scheme:dark){:root{--kw:#c49be0;--str:#a3cf85;--num:#e3a574;--fn:#86b4e8;--bi:#6cc4c0}}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.35}
+.w{margin:0;padding:16px}
+h1{font-size:22px;margin:2px 0;letter-spacing:-.01em}
+.sub{color:var(--mut);font-size:12px;margin:0 0 14px}
+.q{display:block;width:100%;max-width:330px;margin:0 0 12px;padding:6px 9px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:inherit}
+.q:focus{outline:none;border-color:var(--acc)}
+.none{margin:0;color:var(--mut);font-size:12.5px}
+[hidden]{display:none!important}
+::highlight(hit){background:rgb(255 196 0/.35)}
+.g{column-width:330px;column-gap:12px}
+.c{display:flow-root;margin:0 0 12px;break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 11px}
+.c h2{font-size:13px;margin:0 0 7px;color:var(--acc);border-bottom:1px solid var(--line);padding-bottom:5px}
+.l{margin:8px 0 3px;font-size:11px;color:var(--mut);font-weight:600}
+.i:nth-child(1 of .i:not([hidden])) .l{margin-top:2px}
+pre{margin:0;background:var(--code);border-radius:4px;padding:5px 7px;font-family:var(--mono);font-size:11.5px;line-height:1.42;white-space:pre-wrap;overflow-wrap:anywhere}
+pre i{font-style:normal;color:var(--mut)}
+pre .k{color:var(--kw)}
+pre .s{color:var(--str)}
+pre .n{color:var(--num)}
+pre .f{color:var(--fn)}
+pre .b{color:var(--bi)}
+pre .e{color:var(--fg)}
+ul{margin:2px 0 0;padding-left:17px}
+li{margin:4px 0;font-size:12.5px}
+code{font-family:var(--mono);font-size:.92em}
+.url-scroll{overflow-x:auto;padding:14px 0 8px}
+.url-scroll:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.url-diagram{display:grid;grid-template-columns:repeat(8,max-content);width:max-content;min-width:100%;font-size:clamp(11px,1.05vw,15px)}
+.part{text-align:center;--part:var(--acc)}
+.part code,.separator code{display:block;font-size:1em;padding:7px 0;background:var(--code);white-space:nowrap}
+.part code{color:var(--part);border-bottom:2px solid var(--part)}
+.part span{display:block;font-size:11px;font-weight:650;padding-top:12px;position:relative}
+.part span:before{content:"";position:absolute;top:0;left:50%;height:9px;border-left:1px solid var(--part)}
+.part small{display:block;font-size:10px;color:var(--mut);margin-top:2px}
+.scheme{--part:var(--kw)}.host{--part:var(--fn)}.port{--part:var(--num)}
+.path{--part:var(--str)}.query{--part:var(--bi)}.fragment{--part:var(--mut)}
+.origin{grid-column:1/6;border:1px solid var(--line);border-top:0;text-align:center;margin-top:12px;padding:3px;font-size:11px;font-weight:650}
+.origin span{font-weight:400;color:var(--mut);margin-left:6px}
+.anatomy-body{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:start}
+.anatomy-body>.i{flex:1 1 600px;min-width:0}
+.url-notes{flex:1 1 300px;margin:0}
+@media screen and (max-width:703px){.url-diagram{font-size:12px}}
+@media (max-width:520px){.g{column-width:auto;column-count:1}.q{max-width:none;font-size:16px}}
+@media print{
+:root{--bg:#fff;--fg:#000;--mut:#555;--card:#fff;--line:#bbb;--code:#fff;--acc:#000}
+@page{margin:7mm}
+body{font-size:8pt;background:#fff}
+.w{padding:0}
+.g{column-width:auto;column-count:3;column-gap:6px}
+.url-diagram{font-size:7.5pt}
+.url-scroll{padding:5px 0}
+.part span{font-size:6.8pt;padding-top:8px}
+.part span:before{height:6px}
+.part small{font-size:6pt}
+.origin{font-size:6.8pt;margin-top:7px}
+.anatomy-body{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:0 12px}
+.url-notes{display:block;margin:0}
+.g>.c:nth-child(4),.g>.c:nth-child(6){break-before:column}
+.c{break-inside:avoid;page-break-inside:avoid;margin-bottom:6px;padding:4px 5px;border-radius:0}
+.c h2{font-size:8pt;margin-bottom:3px;padding-bottom:2px}
+.l{font-size:6.8pt;margin:4px 0 1px}
+pre{font-size:6pt;line-height:1.2;padding:1px 2px}
+h1{font-size:13pt;margin:0 0 4px}
+.sub,.q{display:none}
+li{font-size:6pt;line-height:1.2;margin:2px 0}
+}</style>
+<script>
+// Colour the Python in every <pre> once the page has loaded. Comments marked by hand
+// with <i> are left alone; a bare # comment gets the same <i> treatment.
+addEventListener("DOMContentLoaded", () => {
+  const words = list => list.trim().split(/\s+/).join("|");
+  const KEYWORDS = words(`and as assert async await break class continue def del elif else except
+    finally for from global if import in is lambda nonlocal not or pass raise return try while with yield`);
+  const BUILTINS = words(`abs all any bool chr dict divmod enumerate filter float frozenset hash input
+    int isinstance iter len list map max min next object open ord pow print range repr reversed round
+    set sorted str sum super tuple type zip Exception IndexError KeyError TypeError ValueError`);
+  const token = new RegExp([
+    String.raw`(?<comment>#.*)`,
+    String.raw`(?<s>(?:\b[rRbBfFuU]{1,2})?(?:"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'))`,
+    String.raw`(?<f>(?<=^[ \t]*)@[\w.]+|(?<=\b(?:def|class)\s+)\w+)`,
+    String.raw`(?<k>(?<=^[ \t]*)(?:match|case)(?=[ \t]+[^\s=.,:)])|(?<!\.)\b(?:${KEYWORDS})\b)`,
+    String.raw`(?<n>(?<!\.)\b(?:True|False|None)\b|\b\d[\d_]*(?:\.\d*)?(?:[eE][+-]?\d+)?\b)`,
+    String.raw`(?<b>(?<!\.)\b(?:${BUILTINS})\b)`,
+  ].join("|"), "gm");
+
+  const make = (tag, cls, ...content) => {
+    const el = document.createElement(tag);
+    if (cls) el.className = cls;
+    el.append(...content);
+    return el;
+  };
+  const wrap = (kind, text) => {
+    if (kind === "comment") return make("i", "", text);
+    // Show the {expressions} in an f-string as code rather than as string.
+    if (kind === "s" && /^[a-z]*f/i.test(text)) {
+      const parts = text.split(/(\{[^{}]*\})/).filter(Boolean);
+      return make("span", "s", ...parts.map(part => part.startsWith("{") ? make("span", "e", part) : part));
+    }
+    return make("span", kind, text);
+  };
+
+  for (const pre of document.querySelectorAll("pre")) {
+    for (const node of [...pre.childNodes]) {
+      if (node.nodeType !== Node.TEXT_NODE) continue;
+      const out = [];
+      let last = 0;
+      for (const m of node.data.matchAll(token)) {
+        const [kind] = Object.entries(m.groups).find(([, v]) => v !== undefined);
+        out.push(node.data.slice(last, m.index), wrap(kind, m[0]));
+        last = m.index + m[0].length;
+      }
+      out.push(node.data.slice(last));
+      node.replaceWith(...out.filter(part => part !== ""));
+    }
+  }
+});
+</script>
+</head>
+<body>
+<div class=w>
+<h1>Python FastAPI — HTTP Vocabulary</h1>
+<p class=sub>URLs, routes, requests and responses · Python 3.10+ · Pydantic 2 · Examples share one app</p>
+<input class=q type=search placeholder="Filter" title="Press / to jump here" aria-label="Filter" aria-keyshortcuts="/" autocomplete=off>
+<p class=none hidden>No matches.</p>
+<div class=layout>
+<section class="c anatomy"><h2>1. Anatomy of a URL</h2>
+<div class=anatomy-body>
+<div class=i>
+<p class=l>Uniform Resource Locator · each label sits beneath its part of the address</p>
+<div class=url-scroll tabindex=0 role=region aria-label="URL diagram; scroll horizontally on narrow screens">
+<div class=url-diagram>
+<div class="part scheme"><code>https</code><span>Scheme</span><small>Protocol</small></div>
+<div class=separator><code>://</code></div>
+<div class="part host"><code>api.example.com</code><span>Host</span><small>Server name</small></div>
+<div class=separator><code>:</code></div>
+<div class="part port"><code>8443</code><span>Port</span><small>Connection</small></div>
+<div class="part path"><code>/items/42</code><span>Path</span><small>Resource</small></div>
+<div class="part query"><code>?q=blue&amp;limit=10</code><span>Query string</span><small>Parameters</small></div>
+<div class="part fragment"><code>#details</code><span>Fragment</span><small>Client only</small></div>
+<div class=origin>Origin <span>scheme + host + port</span></div>
+</div>
+</div>
+</div>
+<ul class=url-notes>
+<li><b>HTTPS</b> protects HTTP with TLS. Default ports: <code>443</code> for HTTPS, <code>80</code> for HTTP.</li>
+<li><b>Query</b> starts with <code>?</code>; <code>&amp;</code> separates parameters. Percent encoding represents characters such as a space with <code>%20</code>.</li>
+<li><b>Origin</b> changes when the scheme, host or port changes.</li>
+<li><b>Fragment</b> starts with <code>#</code> and is never sent in the HTTP request.</li>
+</ul>
+</div>
+</section>
+<div class=g>
+<section class=c><h2>2. The request–response cycle</h2><ul>
+<li><b>API</b> — an interface programs use to communicate. A web API exposes operations over HTTP.</li>
+<li><b>Client → server</b> — a browser, app or command-line client sends an HTTP request; the server returns a response.</li>
+<li><b>Request</b> — method + target path and query + headers + optional body.</li>
+<li><b>Response</b> — status code + headers + optional body. FastAPI normally serialises returned dicts and models as JSON.</li>
+<li><b>FastAPI</b> — the Python web framework. <b>Uvicorn</b> is an ASGI server that runs the app and handles network connections.</li>
+<li><b>Resource</b> — something the API exposes, such as an item. <b>REST</b> is an architectural style; using FastAPI alone does not make an API RESTful.</li>
+</ul></section>
+
+<section class=c><h2>3. Route, endpoint, handler</h2>
+<ul>
+<li><b>Endpoint</b> — an operation exposed to clients: an HTTP method + URL path, such as <code>GET /items/{item_id}</code>.</li>
+<li><b>Handler</b> — the Python function that processes requests to an endpoint, such as <code>read_item</code>.</li>
+<li><b>Route</b> — the registration rule connecting an endpoint to its handler.</li>
+<li><b>FastAPI terms</b> — a <b>path operation</b> is the method + path pair; its <b>path operation function</b> is the handler. FastAPI's internal <code>endpoint</code> argument also means the handler.</li>
+<li><b>Decorator</b> — <code>@app.get(...)</code> registers the handler. <code>GET /items/42?q=blue</code> calls it with <code>item_id=42</code> and <code>q="blue"</code>.</li>
+</ul><div class=i><p class=l>Minimal application · main.py</p><pre>from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/items/{item_id}")
+def read_item(
+    item_id: int, q: str | None = None
+):
+    return {"id": item_id, "q": q}</pre></div>
+</section>
+
+<section class=c><h2>4. HTTP methods / verbs</h2><ul>
+<li><b>GET</b> — read a resource. Safe and idempotent. Use query parameters for filters; avoid request bodies.</li>
+<li><b>POST</b> — submit data or create a resource. Generally not idempotent; retries can duplicate work.</li>
+<li><b>PUT</b> — create or replace the state at a target URL. Idempotent.</li>
+<li><b>PATCH</b> — partially update a resource. Not necessarily idempotent.</li>
+<li><b>DELETE</b> — remove a resource. Idempotent, even if a retry returns a different status.</li>
+<li><b>HEAD</b> — GET semantics without a response body. <b>OPTIONS</b> — ask about communication options; also used for CORS preflight.</li>
+<li><b>Safe</b> means no requested state change. <b>Idempotent</b> means repeating the same request has the same intended server effect as doing it once.</li>
+<li>Use <code>@app.post</code>, <code>@app.put</code>, <code>@app.patch</code>, etc. You implement the semantics; the decorator does not provide storage or CRUD logic.</li>
+</ul></section>
+
+<section class=c><h2>5. Parameters and validation</h2><ul>
+<li><b>Path parameter</b> — <code>item_id</code> appears in <code>{item_id}</code>; always required. The <code>int</code> annotation parses and validates it.</li>
+<li><b>Query parameter</b> — a scalar function parameter absent from the path, such as <code>q</code>. A default makes it optional; no default means required.</li>
+<li><b>Nullable ≠ optional</b> — <code>str | None</code> permits <code>None</code>; <code>= None</code> lets the caller omit the parameter.</li>
+</ul>
+<ul>
+<li><b>Validation</b> — <code>?limit=abc</code> or <code>?limit=0</code> yields <code>422</code> by default, before the handler runs.</li>
+<li><b>Route order</b> matters: register <code>/users/me</code> before <code>/users/{user_id}</code>, or “me” can match the parameter route.</li>
+</ul><div class=i><p class=l>Constraints with Annotated and Query</p><pre>from typing import Annotated
+from fastapi import Query
+
+@app.get("/items")
+def list_items(
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+):
+    return {"limit": limit}</pre></div>
+</section>
+
+<section class=c><h2>6. Request body and schema</h2>
+<ul>
+<li><b>Body / payload</b> — request content, separate from the URL. Send <code>{"name":"Pen","price":2.5}</code> with <code>Content-Type: application/json</code>.</li>
+<li><b>Schema</b> — the data's shape and constraints. Pydantic parses and validates data, and can coerce compatible values.</li>
+<li><b>Model instance</b> — <code>item.name</code> accesses a validated field; <code>item.model_dump()</code> produces a Python dict.</li>
+<li><b>Response model</b> — validates, serialises and filters the returned data to the declared schema.</li>
+<li>A Pydantic model parameter is read from the body by default. Use <code>Body()</code> for scalar body values; <code>Form()</code> and <code>File()</code> handle other encodings.</li>
+</ul><div class=i><p class=l>Pydantic model → JSON body</p><pre>from pydantic import BaseModel, Field
+
+class Item(BaseModel):
+    name: str
+    price: float = Field(gt=0)
+
+@app.post("/items", status_code=201,
+          response_model=Item)
+def create_item(item: Item):
+    <i># Echo only; add persistence here.</i>
+    return item</pre></div>
+</section>
+
+<section class=c><h2>7. Headers, cookies and CORS</h2><ul>
+<li><b>Header</b> — named request or response metadata. Header names are case-insensitive.</li>
+<li><code>Content-Type</code> describes the body being sent; <code>Accept</code> states the response media types the client accepts.</li>
+<li><code>Authorization: Bearer …</code> carries credentials. Reading the header alone does not authenticate a caller.</li>
+<li><b>Cookie</b> — data a browser stores from <code>Set-Cookie</code> and sends in a <code>Cookie</code> header on eligible requests. Use <code>Cookie()</code> to read one.</li>
+</ul>
+<ul>
+<li><code>user_agent</code> maps to <code>User-Agent</code>: underscores become hyphens by default.</li>
+<li><b>CORS</b> — browser rules for cross-origin access. Configure <code>CORSMiddleware</code> for allowed frontend origins. CORS is not authentication.</li>
+</ul><div class=i><p class=l>Read a header with Header</p><pre>from fastapi import Header
+
+@app.get("/agent")
+def agent(
+    user_agent: Annotated[str | None, Header()] = None,
+):
+    return {"user_agent": user_agent}</pre></div>
+</section>
+
+<section class=c><h2>8. Status codes and errors</h2><ul>
+<li><b>2xx success</b> — <code>200 OK</code>; <code>201 Created</code>; <code>204 No Content</code> (no response body).</li>
+<li><b>3xx redirection</b> — <code>307</code> temporary and <code>308</code> permanent redirects preserve the request method.</li>
+<li><b>4xx client errors</b> — <code>400</code> bad request; <code>401</code> missing/invalid authentication; <code>403</code> forbidden; <code>404</code> not found.</li>
+<li><code>405</code> method not allowed; <code>409</code> conflict; <code>422</code> request validation failed; <code>429</code> too many requests.</li>
+<li><b>5xx server errors</b> — <code>500</code> internal error; <code>502</code> bad gateway; <code>503</code> service unavailable.</li>
+</ul>
+<div class=i><p class=l>Raise an HTTP error; do not return it</p><pre>from fastapi import HTTPException
+
+@app.get("/missing")
+def missing():
+    raise HTTPException(
+        status_code=404,
+        detail="Item not found"
+    )
+<i># JSON response: {"detail": "Item not found"}</i></pre></div>
+</section>
+
+<section class=c><h2>9. Running and organising an app</h2><ul>
+<li><b>Install</b>: <code>python -m pip install "fastapi[standard]"</code>. <b>Run locally</b>: <code>fastapi dev main.py</code>.</li>
+<li><b>Try it</b>: open <code>http://127.0.0.1:8000/docs</code> for Swagger UI; <code>/redoc</code> is another docs view.</li>
+<li><b>OpenAPI</b> — the machine-readable API description at <code>/openapi.json</code>; drives documentation and client generation.</li>
+<li><b>APIRouter</b> — groups routes; <code>app.include_router(router, prefix="/v1")</code> adds them to the app.</li>
+<li><b>Dependency</b> — <code>Depends(...)</code> asks FastAPI to call a helper and inject its result, such as a database session or authenticated user.</li>
+<li><b>Policy</b> — a rule governing API access or behaviour, such as “only admins may delete” or “100 requests per minute”. Dependencies, middleware or an API gateway can enforce it.</li>
+<li><b>Middleware</b> — wraps request/response handling, for example to add CORS headers or request timing.</li>
+<li><b>async def</b> — use with awaitable I/O. Blocking calls inside it block the event loop. FastAPI runs ordinary <code>def</code> handlers in a thread pool.</li>
+<li><b>TestClient</b> — exercises the app in tests without starting a network server.</li>
+</ul></section>
+</div>
+</div>
+</div>
+<script>
+const q = document.querySelector(".q");
+const none = document.querySelector(".none");
+const hits = window.Highlight && new Highlight();
+if (hits) CSS.highlights.set("hit", hits);
+
+// A card whose heading matches shows whole; otherwise only its matching items show.
+function filter() {
+  const term = q.value.trim().toLowerCase();
+  const has = el => el.textContent.toLowerCase().includes(term);
+  let shown = 0;
+  for (const card of document.querySelectorAll(".c")) {
+    const whole = has(card.querySelector("h2"));
+    let any = whole;
+    for (const item of card.querySelectorAll(".i, li")) {
+      item.hidden = !whole && !has(item);
+      any ||= !item.hidden;
+    }
+    card.hidden = !any;
+    if (any) shown++;
+  }
+  none.hidden = shown > 0;
+  if (hits) mark(term);
+}
+
+// Highlight each occurrence, even where syntax colouring splits it across elements.
+function mark(term) {
+  hits.clear();
+  if (!term) return;
+  for (const el of document.querySelectorAll(".c:not([hidden]) :is(h2, .l, pre, li, .url-diagram)")) {
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let text = "";
+    while (walk.nextNode()) {
+      nodes.push({ node: walk.currentNode, start: text.length });
+      text += walk.currentNode.data;
+    }
+    text = text.toLowerCase();
+    const at = offset => {
+      const n = nodes.findLast(n => n.start <= offset);
+      return [n.node, offset - n.start];
+    };
+    for (let i = text.indexOf(term); i >= 0; i = text.indexOf(term, i + term.length)) {
+      const range = new Range();
+      range.setStart(...at(i));
+      range.setEnd(...at(i + term.length));
+      hits.add(range);
+    }
+  }
+}
+
+q.addEventListener("input", filter);
+q.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    q.value = "";
+    filter();
+    q.blur();
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "/" && e.target !== q && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault();
+    q.focus();
+    q.select();
+  }
+});
+</script>
+</body>
+</html>
